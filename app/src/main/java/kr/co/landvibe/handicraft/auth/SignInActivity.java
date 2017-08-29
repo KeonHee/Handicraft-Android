@@ -19,7 +19,10 @@ import butterknife.ButterKnife;
 import kr.co.landvibe.handicraft.R;
 import kr.co.landvibe.handicraft.main.MainActivity;
 import kr.co.landvibe.handicraft.utils.LogUtils;
+import kr.co.landvibe.handicraft.utils.SharedPreferenceUtils;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import static kr.co.landvibe.handicraft.utils.DefineUtils.SPREF_NAVER_ID;
 
 public class SignInActivity extends AppCompatActivity implements SignInContract.View {
 
@@ -60,13 +63,12 @@ public class SignInActivity extends AppCompatActivity implements SignInContract.
 
     private void init() {
         mOAuthLoginInstance = OAuthLogin.getInstance();
-        mOAuthLoginInstance.init(mContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
-
+        mOAuthLoginInstance.init(getApplicationContext(), OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
         mOAuthLoginButton.setOAuthLoginHandler(mOAuthLoginHandler);
 
         mSignInPresenter = new SignInPresenter();
         mSignInPresenter.attachView(this);
-        mSignInPresenter.checkSessionNaverOauth();
+        mSignInPresenter.checkSessionNaverOauth(mOAuthLoginInstance);
     }
 
     @Override
@@ -98,7 +100,10 @@ public class SignInActivity extends AppCompatActivity implements SignInContract.
                 LogUtils.d("tokenType: " + tokenType);
                 LogUtils.d("state: " + mOAuthLoginInstance.getState(mContext).toString());
 
-                mSignInPresenter.signInWithNaverOauth(accessToken, refreshToken, expiresAt, tokenType);
+                // Naver token 캐싱
+                SharedPreferenceUtils.setStringPreference(getContext(), SPREF_NAVER_ID, accessToken);
+
+                mSignInPresenter.login(accessToken, refreshToken, expiresAt, tokenType);
             } else {
                 String errorCode = mOAuthLoginInstance.getLastErrorCode(mContext).getCode();
                 String errorDesc = mOAuthLoginInstance.getLastErrorDesc(mContext);
@@ -110,6 +115,11 @@ public class SignInActivity extends AppCompatActivity implements SignInContract.
     /**
      * SignInContract.View
      */
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
     @Override
     public void showLoading() {
 

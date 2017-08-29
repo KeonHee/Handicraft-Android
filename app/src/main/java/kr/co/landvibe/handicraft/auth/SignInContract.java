@@ -1,9 +1,15 @@
 package kr.co.landvibe.handicraft.auth;
 
 
+import android.content.Context;
+
+import com.nhn.android.naverlogin.OAuthLogin;
+
 public interface SignInContract {
 
     interface View {
+
+        Context getContext();
 
         void showLoading();
 
@@ -19,9 +25,9 @@ public interface SignInContract {
 
         void detachView();
 
-        void signInWithNaverOauth(String accessToken, String refreshToken, long expiresAt, String tokenType);
+        void login(String accessToken, String refreshToken, long expiresAt, String tokenType);
 
-        void checkSessionNaverOauth();
+        void checkSessionNaverOauth(OAuthLogin mOAuthLoginInstance);
 
     }
 
