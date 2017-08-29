@@ -19,14 +19,15 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import com.nhn.android.naverlogin.OAuthLogin;
+
 import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
-import jp.wasabeef.glide.transformations.BlurTransformation;
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import kr.co.landvibe.handicraft.R;
 import kr.co.landvibe.handicraft.introduction.IntroductionActivity;
+import kr.co.landvibe.handicraft.auth.SignInActivity;
 import kr.co.landvibe.handicraft.masterProfile.MasterProfileActivity;
 import kr.co.landvibe.handicraft.userProfile.UserProfileActivity;
 import kr.co.landvibe.handicraft.utils.LogUtils;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity
     String[] tabName;
 
     ImageView mAvatarIv;
+    private OAuthLogin mOAuthLogin;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -66,6 +68,8 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        mOAuthLogin=OAuthLogin.getInstance();
 
         init();
 
@@ -138,7 +142,15 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
+            if(mOAuthLogin!=null){
+                mOAuthLogin.logout(this);
+
+                final Intent intent = new Intent(this, SignInActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+                finish();
+            }
             return true;
         }
 
