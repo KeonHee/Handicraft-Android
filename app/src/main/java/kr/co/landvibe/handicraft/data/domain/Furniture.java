@@ -28,7 +28,7 @@ public class Furniture implements Serializable {
     @SerializedName("brand")
     private String brand; // 브랜드
     @SerializedName("periodOfUse")
-    private int periodOfUse; // 사용 기간c
+    private String periodOfUse; // 사용 기간
     @SerializedName("price")
     private long price; // 판매가( 공유시 0원)
     @SerializedName("width")
@@ -49,7 +49,7 @@ public class Furniture implements Serializable {
     public Furniture() {
     }
 
-    public Furniture(long id, String title, String state, String grade, String description, List<String> imageUrl, String type, String brand, int periodOfUse, long price, int width, int length, int height, String location, double lat, double lon, Date createAt) {
+    public Furniture(long id, String title, String state, String grade, String description, List<String> imageUrl, String type, String brand, String periodOfUse, long price, int width, int length, int height, String location, double lat, double lon, Date createAt) {
         this.id = id;
         this.title = title;
         this.state = state;
@@ -133,11 +133,11 @@ public class Furniture implements Serializable {
         this.brand = brand;
     }
 
-    public int getPeriodOfUse() {
+    public String getPeriodOfUse() {
         return periodOfUse;
     }
 
-    public void setPeriodOfUse(int periodOfUse) {
+    public void setPeriodOfUse(String periodOfUse) {
         this.periodOfUse = periodOfUse;
     }
 
