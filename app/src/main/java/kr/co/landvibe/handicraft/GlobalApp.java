@@ -32,31 +32,6 @@ public class GlobalApp extends MultiDexApplication {
 
     private static Retrofit retrofitInstance;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        this.DEBUG = isDebuggable(this);
-
-        LogUtils.d("onCreate");
-        mInstance = this;
-
-        initFont();
-        initRealm();
-
-    }
-
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        LogUtils.d("attachBaseContext");
-    }
-
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-        mInstance = null;
-    }
-
     public static GlobalApp getGlobalApplicationContext() {
         if (mInstance == null) {
             throw new IllegalStateException("this application does not inherit GlobalApplication");
@@ -90,6 +65,31 @@ public class GlobalApp extends MultiDexApplication {
                     .build();
         }
         return retrofitInstance;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        this.DEBUG = isDebuggable(this);
+
+        LogUtils.d("onCreate");
+        mInstance = this;
+
+        initFont();
+        initRealm();
+
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        LogUtils.d("attachBaseContext");
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        mInstance = null;
     }
 
     /**
@@ -129,7 +129,7 @@ public class GlobalApp extends MultiDexApplication {
     private void initRealm() {
         Realm.init(this);
         RealmConfiguration config = new RealmConfiguration.Builder().build();
-        Realm.deleteRealm(config);
+        Realm.deleteRealm(config);  // 켤떄마다 Realm 초기화 됨
         Realm.setDefaultConfiguration(config);
 
     }

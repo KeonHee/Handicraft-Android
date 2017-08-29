@@ -9,25 +9,46 @@ public class LogUtils {
 
     static final String TAG = "HANDICRAFT";
 
-    /** Log Level Error **/
+    /**
+     * Log Level Error with Throwable
+     **/
+    public static final void e(String message, Throwable t) {
+        if (GlobalApp.DEBUG) Log.e(TAG, buildLogMsg(message), t);
+    }
+
+    /**
+     * Log Level Error
+     **/
     public static final void e(String message) {
         if (GlobalApp.DEBUG) Log.e(TAG, buildLogMsg(message));
     }
-    /** Log Level Warning **/
+
+    /**
+     * Log Level Warning
+     **/
     public static final void w(String message) {
-        if (GlobalApp.DEBUG)Log.w(TAG, buildLogMsg(message));
+        if (GlobalApp.DEBUG) Log.w(TAG, buildLogMsg(message));
     }
-    /** Log Level Information **/
+
+    /**
+     * Log Level Information
+     **/
     public static final void i(String message) {
-        if (GlobalApp.DEBUG)Log.i(TAG, buildLogMsg(message));
+        if (GlobalApp.DEBUG) Log.i(TAG, buildLogMsg(message));
     }
-    /** Log Level Debug **/
+
+    /**
+     * Log Level Debug
+     **/
     public static final void d(String message) {
-        if (GlobalApp.DEBUG)Log.d(TAG, buildLogMsg(message));
+        if (GlobalApp.DEBUG) Log.d(TAG, buildLogMsg(message));
     }
-    /** Log Level Verbose **/
+
+    /**
+     * Log Level Verbose
+     **/
     public static final void v(String message) {
-        if (GlobalApp.DEBUG)Log.v(TAG, buildLogMsg(message));
+        if (GlobalApp.DEBUG) Log.v(TAG, buildLogMsg(message));
     }
 
 
