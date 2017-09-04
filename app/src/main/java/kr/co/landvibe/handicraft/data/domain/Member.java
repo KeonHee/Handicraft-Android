@@ -8,7 +8,7 @@ import kr.co.landvibe.handicraft.type.GenderType;
 
 public class Member extends RealmObject implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 4909606623101545491L;
 
     private String id;
     private String name;
