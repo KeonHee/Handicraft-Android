@@ -13,7 +13,7 @@ public interface FurnitureAddContract {
 
         void backToMainActivity();
 
-        void showPreviewActivity();
+        void showPreviewActivity(Furniture furniture);
 
     }
 

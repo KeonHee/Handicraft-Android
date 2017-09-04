@@ -25,6 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import kr.co.landvibe.handicraft.R;
+import kr.co.landvibe.handicraft.data.domain.Furniture;
 import kr.co.landvibe.handicraft.furniture.preview.FurniturePreviewActivity;
 import kr.co.landvibe.handicraft.type.PeriodOfUseType;
 import kr.co.landvibe.handicraft.type.StateType;
@@ -45,8 +46,16 @@ public class FurnitureAddActivity extends AppCompatActivity
     TextView mStateTv;
     @BindView(R.id.tv_trade)
     TextView mTradeTv;
+    @BindView(R.id.et_brand)
+    EditText mBrandEt;
     @BindView(R.id.tv_period)
     TextView mPeriodOfUseTv;
+    @BindView(R.id.et_width_size)
+    EditText mWidthEt;
+    @BindView(R.id.et_length_size)
+    EditText mLengthEt;
+    @BindView(R.id.et_height_size)
+    EditText mHeightEt;
     @BindView(R.id.tv_desc)
     TextView mDescTv;
     @BindArray(R.array.state_rank)
@@ -166,6 +175,25 @@ public class FurnitureAddActivity extends AppCompatActivity
         mFurnitureAddPresenter.attachView(this);
     }
 
+    public boolean validFurniture() {
+        // TODO valid value
+        return true;
+    }
+
+    public Furniture formFurniture() {
+        Furniture furniture = new Furniture();
+        furniture.setTitle(mTitleEt.getText().toString());
+        furniture.setPrice(Long.parseLong(mPriceEt.getText().toString().replace(",", "")));
+        furniture.setGrade(mTradeTv.getText().toString());
+        furniture.setState(mStateTv.getText().toString());
+        furniture.setBrand(mBrandEt.getText().toString());
+        furniture.setPeriodOfUse(mPeriodOfUseTv.getText().toString());
+        furniture.setWidth(Integer.parseInt(mWidthEt.getText().toString()));
+        furniture.setLength(Integer.parseInt(mLengthEt.getText().toString()));
+        furniture.setHeight(Integer.parseInt(mHeightEt.getText().toString()));
+        return furniture;
+    }
+
     @OnClick(R.id.state_container)
     public void createStateChoiceDialog(View v) {
         mStateChoiceDialog.show();
@@ -182,8 +210,31 @@ public class FurnitureAddActivity extends AppCompatActivity
     }
 
     @OnClick(R.id.desc_container)
-    public void createDescDIalog(View v) {
+    public void createDescDialog(View v) {
         mDescDialog.show();
+    }
+
+    @OnClick(R.id.location_container)
+    public void showLocation(View v) {
+
+    }
+
+    @OnClick(R.id.btn_preview)
+    public void preview(View v) {
+        if (validFurniture()) {
+            showPreviewActivity(formFurniture());
+        } else {
+            // TODO AlertDialog
+        }
+    }
+
+    @OnClick(R.id.btn_register)
+    public void register(View v) {
+        if (validFurniture()) {
+            // TODO 등록
+        } else {
+            // TODO AlertDialog
+        }
     }
 
     @Override
@@ -211,9 +262,12 @@ public class FurnitureAddActivity extends AppCompatActivity
     }
 
     @Override
-    public void showPreviewActivity() {
+    public void showPreviewActivity(Furniture furniture) {
         final Intent intent = new Intent(this, FurniturePreviewActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Furniture.KEY, furniture);
+        intent.putExtras(bundle);
         startActivity(intent);
     }
 }

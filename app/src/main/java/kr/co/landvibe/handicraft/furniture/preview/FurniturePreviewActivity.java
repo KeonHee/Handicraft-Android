@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import kr.co.landvibe.handicraft.R;
+import kr.co.landvibe.handicraft.data.domain.Furniture;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class FurniturePreviewActivity extends AppCompatActivity
@@ -38,6 +39,7 @@ public class FurniturePreviewActivity extends AppCompatActivity
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        Furniture furniture = (Furniture) getIntent().getSerializableExtra(Furniture.KEY);
 
         mFurniturePreviewPresenter = new FurniturePreviewPresenter();
         mFurniturePreviewPresenter.attachView(this);

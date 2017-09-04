@@ -9,8 +9,8 @@ import java.util.List;
 
 public class Furniture implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
+    public static final String KEY = "funiture";
+    private static final long serialVersionUID = 1049314199876487430L;
     @SerializedName("fid")
     private long id;
     @SerializedName("title")
