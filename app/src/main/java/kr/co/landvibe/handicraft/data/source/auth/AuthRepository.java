@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import io.reactivex.Maybe;
 import kr.co.landvibe.handicraft.GlobalApp;
-import kr.co.landvibe.handicraft.data.domain.Member;
+import kr.co.landvibe.handicraft.data.domain.NaverUser;
 import kr.co.landvibe.handicraft.data.source.auth.remote.AuthService;
 import kr.co.landvibe.handicraft.data.source.auth.remote.NaverAuthService;
 import kr.co.landvibe.handicraft.data.support.NaverResponseWrapper;
@@ -65,33 +65,38 @@ public class AuthRepository implements AuthDataSource {
     }
 
     @Override
-    public Maybe<String> createAuth(@NonNull String accessToken, @NonNull Member member) {
+    public Maybe<String> createAuth(@NonNull String accessToken, @NonNull NaverUser naverUser) {
         return mAuthService.signUp(
                 accessToken,
-                member)
-                .flatMap(response -> {
-                    if (response.isSuccessful()) {
-                        LogUtils.d("Success to create auth");
-                        LogUtils.d("Response Code : " + response.code());
+                naverUser.getId(),
+                naverUser.getName(),
+                naverUser.getNickname(),
+                "","",
+                naverUser.getBirthday(),
+                naverUser.getProfile_image()
+        ).flatMap(response -> {
+            if (response.isSuccessful()) {
+                LogUtils.d("Success to create auth");
+                LogUtils.d("Response Code : " + response.code());
 
-                        String craftToken = response.headers().get(CRAFT_TOKEN_KEY);
-                        return Maybe.just(tokenFilter(craftToken));
-                    } else {
-                        switch (response.code()) {
-                            case 401:
-                                return Maybe.error(new UnAuthorizationException(response.errorBody().string()));
-                            case 500:
-                                return Maybe.error(new InternalServerException(response.errorBody().string()));
-                            default:
-                                return Maybe.empty();
-                        }
-                    }
-                });
+                String craftToken = response.headers().get(CRAFT_TOKEN_KEY);
+                return Maybe.just(tokenFilter(craftToken));
+            } else {
+                switch (response.code()) {
+                    case 401:
+                        return Maybe.error(new UnAuthorizationException());
+                    case 500:
+                        return Maybe.error(new InternalServerException());
+                    default:
+                        return Maybe.empty();
+                }
+            }
+        });
     }
 
     @Override
     public Maybe<String> getAuth(@NonNull String accessToken) {
-        return mAuthService.login(accessToken)
+        return mAuthService.signin(accessToken)
                 .flatMap(response -> {
                     if (response.isSuccessful()) {
                         LogUtils.d("Success to get auth");
@@ -102,9 +107,9 @@ public class AuthRepository implements AuthDataSource {
                     } else {
                         switch (response.code()) {
                             case 401:
-                                return Maybe.error(new UnAuthorizationException(response.errorBody().string()));
+                                return Maybe.error(new UnAuthorizationException());
                             case 500:
-                                return Maybe.error(new InternalServerException(response.errorBody().string()));
+                                return Maybe.error(new InternalServerException());
                             default:
                                 return Maybe.empty();
                         }
@@ -113,30 +118,30 @@ public class AuthRepository implements AuthDataSource {
     }
 
     @Override
-    public Maybe<Member> getNaverUserInfo(@NonNull String accessToken, @NonNull String tokenType) {
+    public Maybe<NaverUser> getNaverUser(@NonNull String accessToken, @NonNull String tokenType) {
         return mNaverAuthService.getUserInfo(tokenType + " " + accessToken)
                 .flatMap(response -> {
                     if (response.isSuccessful()) {
-                        NaverResponseWrapper<Member> body = response.body();
-                        Member member;
+                        NaverResponseWrapper<NaverUser> body = response.body();
+                        NaverUser naverUser;
                         try {
-                            member = body.getResponse();
+                            naverUser = body.getResponse();
                         } catch (NullPointerException e) {
                             LogUtils.e("Response Message : " + body.getMessage());
                             LogUtils.e("Response ResultCode : " + body.getResultcode());
                             return Maybe.error(new NotFoundException());
                         }
-                        return Maybe.just(member);
+                        return Maybe.just(naverUser);
                     } else {
                         switch (response.code()) {
                             case 401:
-                                return Maybe.error(new UnAuthorizationException(response.errorBody().string()));
+                                return Maybe.error(new UnAuthorizationException());
                             case 403:
-                                return Maybe.error(new ForbiddenException(response.errorBody().string()));
+                                return Maybe.error(new ForbiddenException());
                             case 404:
-                                return Maybe.error(new NotFoundException(response.errorBody().string()));
+                                return Maybe.error(new NotFoundException());
                             case 500:
-                                return Maybe.error(new InternalServerException(response.errorBody().string()));
+                                return Maybe.error(new InternalServerException());
                             default:
                                 return Maybe.empty();
                         }

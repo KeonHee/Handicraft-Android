@@ -1,63 +1,57 @@
 package kr.co.landvibe.handicraft.data.domain;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.Date;
 
 import io.realm.RealmObject;
-import kr.co.landvibe.handicraft.type.GenderType;
 
 public class Member extends RealmObject implements Serializable {
 
     private static final long serialVersionUID = 4909606623101545491L;
 
+    @SerializedName("uid")
     private String id;
+    @SerializedName("name")
     private String name;
+    @SerializedName("nickname")
+    private String nickname;
+    @SerializedName("phone")
     private String phone;
-    private GenderType gender;
+    @SerializedName("birthday")
+    private String birthday;
+    @SerializedName("address")
     private String address;
-    private String feature;
+    @SerializedName("joinAt")
     private Date joinAt;
-    private String craftToken;
-    private String profileImage;
+    @SerializedName("avatar")
+    private String avatar;
 
     public Member() {
     }
 
-    public Member(String id, String name, String phone, GenderType gender, String address, String feature, Date joinAt, String craftToken, String profileImage) {
+    public Member(String id, String name, String nickname, String phone,
+                  String birthday, String address, Date joinAt, String avatar) {
         this.id = id;
         this.name = name;
+        this.nickname = nickname;
         this.phone = phone;
-        this.gender = gender;
+        this.birthday = birthday;
         this.address = address;
-        this.feature = feature;
         this.joinAt = joinAt;
-        this.craftToken = craftToken;
-        this.profileImage = profileImage;
+        this.avatar = avatar;
     }
 
     public void bind(Member m) {
         // no id
         this.name = m.getName();
+        this.nickname = m.getNickname();
         this.phone = m.getPhone();
-        this.gender = m.getGender();
+        this.birthday = m.getBirthday();
         this.address = m.getAddress();
-        this.feature = m.getFeature();
         this.joinAt = m.getJoinAt();
-        this.craftToken = m.getCraftToken();
-        this.profileImage = m.getProfileImage();
-    }
-
-    public void setGender(String gender) {
-        switch (gender) {
-            case "F":
-                this.gender = GenderType.FEMALE;
-                break;
-            case "M":
-                this.gender = GenderType.MALE;
-                break;
-            default:
-                this.gender = GenderType.UNKNOWN;
-        }
+        this.avatar = m.getAvatar();
     }
 
     public String getId() {
@@ -76,6 +70,14 @@ public class Member extends RealmObject implements Serializable {
         this.name = name;
     }
 
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
     public String getPhone() {
         return phone;
     }
@@ -84,12 +86,12 @@ public class Member extends RealmObject implements Serializable {
         this.phone = phone;
     }
 
-    public GenderType getGender() {
-        return gender;
+    public String getBirthday() {
+        return birthday;
     }
 
-    public void setGender(GenderType gender) {
-        this.gender = gender;
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
     }
 
     public String getAddress() {
@@ -100,14 +102,6 @@ public class Member extends RealmObject implements Serializable {
         this.address = address;
     }
 
-    public String getFeature() {
-        return feature;
-    }
-
-    public void setFeature(String feature) {
-        this.feature = feature;
-    }
-
     public Date getJoinAt() {
         return joinAt;
     }
@@ -116,19 +110,11 @@ public class Member extends RealmObject implements Serializable {
         this.joinAt = joinAt;
     }
 
-    public String getCraftToken() {
-        return craftToken;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setCraftToken(String craftToken) {
-        this.craftToken = craftToken;
-    }
-
-    public String getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

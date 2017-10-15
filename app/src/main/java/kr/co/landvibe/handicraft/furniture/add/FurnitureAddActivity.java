@@ -4,10 +4,13 @@ package kr.co.landvibe.handicraft.furniture.add;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,6 +22,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 import butterknife.BindArray;
 import butterknife.BindView;
@@ -26,17 +33,25 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import kr.co.landvibe.handicraft.R;
 import kr.co.landvibe.handicraft.data.domain.Furniture;
-import kr.co.landvibe.handicraft.furniture.preview.FurniturePreviewActivity;
+import kr.co.landvibe.handicraft.furniture.add.adapter.ImageListAdapter;
+import kr.co.landvibe.handicraft.listener.OnItemClickListener;
+import kr.co.landvibe.handicraft.listener.OnItemLongClickListener;
 import kr.co.landvibe.handicraft.type.PeriodOfUseType;
 import kr.co.landvibe.handicraft.type.StateType;
 import kr.co.landvibe.handicraft.type.TradeType;
+import kr.co.landvibe.handicraft.utils.LogUtils;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class FurnitureAddActivity extends AppCompatActivity
-        implements FurnitureAddContract.View {
+        implements FurnitureAddContract.View, OnItemClickListener, OnItemLongClickListener {
+
+    private static final int REQ_CODE_SELECT_IMAGE = 1234;
 
     @BindView(R.id.toolbar_furniture_add)
     Toolbar mToolbar;
+
+    @BindView(R.id.rv_images)
+    RecyclerView ImageContainer;
 
     @BindView(R.id.et_title)
     EditText mTitleEt;
@@ -58,10 +73,12 @@ public class FurnitureAddActivity extends AppCompatActivity
     EditText mHeightEt;
     @BindView(R.id.tv_desc)
     TextView mDescTv;
+
     @BindArray(R.array.state_rank)
     String[] mStateList;
     @BindArray(R.array.trade_type)
     String[] mTradeTypeList;
+
     private String mPriceText = "";
     private EditText descEtInDialog;
     private InputMethodManager imm;
@@ -75,6 +92,8 @@ public class FurnitureAddActivity extends AppCompatActivity
     private AlertDialog mDescDialog;
 
     private FurnitureAddContract.Presenter mFurnitureAddPresenter;
+
+    private ImageListAdapter imageListAdapter;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -168,11 +187,23 @@ public class FurnitureAddActivity extends AppCompatActivity
                 .setNegativeButton("취소", (DialogInterface dialog, int which) -> {
                     imm.hideSoftInputFromWindow(descEtInDialog.getWindowToken(), 0);
                     dialog.dismiss();
+
+
                 })
                 .create();
 
+        imageListAdapter = new ImageListAdapter(this);
+        imageListAdapter.setOnItemClickListener(this);
+        imageListAdapter.setOnItemLongClickListener(this);
+        ImageContainer.setAdapter(imageListAdapter);
+        ImageContainer.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        ImageContainer.setHasFixedSize(true);
+
         mFurnitureAddPresenter = new FurnitureAddPresenter();
-        mFurnitureAddPresenter.attachView(this);
+        mFurnitureAddPresenter.attachView(this, this);
+
+        Uri plusImage = Uri.parse("android.resource://" + getPackageName() + "/drawable/" + R.drawable.plus_btn);
+        imageListAdapter.setListData(new ArrayList<>(Arrays.asList(plusImage)));
     }
 
     public boolean validFurniture() {
@@ -219,12 +250,47 @@ public class FurnitureAddActivity extends AppCompatActivity
 
     }
 
-    @OnClick(R.id.btn_preview)
-    public void preview(View v) {
-        if (validFurniture()) {
-            showPreviewActivity(formFurniture());
-        } else {
-            // TODO AlertDialog
+    @Override
+    public void onItemClick(Object object) {
+        Uri imageUri = (Uri) object;
+        if (imageListAdapter.getImageList().indexOf(imageUri) == 0) {
+            startActivityForResult(
+                    Intent.createChooser(
+                            new Intent(Intent.ACTION_GET_CONTENT).setType("image/*"),
+                            "사진 가져오기"),
+                    REQ_CODE_SELECT_IMAGE);
+        }
+    }
+
+    @Override
+    public boolean onItemLongClick(Object object) {
+        Uri imageUri = (Uri) object;
+        int index = imageListAdapter.getImageList().indexOf(imageUri);
+        if (index == 0) {
+            return false;
+        }
+        new AlertDialog.Builder(this)
+                .setTitle("사진 삭제")
+                .setMessage("사진 목록에서 해당 사진을 삭제하시겠습니까?")
+                .setCancelable(true)
+                .setPositiveButton("확인", (dialog, whichButton) -> {
+                    imageListAdapter.removeData(index);
+                    dialog.cancel();
+                })
+                .setNegativeButton("취소", (dialog, whichButton) -> dialog.cancel())
+                .create()
+                .show();
+        return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQ_CODE_SELECT_IMAGE) {
+                Uri imageUrl = data.getData();
+                LogUtils.d("Image Url: " + imageUrl.toString());
+                imageListAdapter.addData(imageUrl);
+            }
         }
     }
 
@@ -261,13 +327,13 @@ public class FurnitureAddActivity extends AppCompatActivity
         finish();
     }
 
-    @Override
-    public void showPreviewActivity(Furniture furniture) {
-        final Intent intent = new Intent(this, FurniturePreviewActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(Furniture.KEY, furniture);
-        intent.putExtras(bundle);
-        startActivity(intent);
+
+    private int getRandomFurnitureImage() {
+        List<Integer> furnitures = new ArrayList<>(
+                Arrays.asList(R.drawable.f1, R.drawable.f3, R.drawable.f5, R.drawable.f7, R.drawable.f8));
+        Random random = new Random();
+        return furnitures.get(random.nextInt(5));
     }
+
+
 }

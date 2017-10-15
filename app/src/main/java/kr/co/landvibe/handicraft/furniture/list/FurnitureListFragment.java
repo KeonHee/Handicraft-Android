@@ -94,7 +94,7 @@ public class FurnitureListFragment extends Fragment
 
         // Set Presenter
         mFurnitureListPresenter = new FurnitureListPresenter();
-        mFurnitureListPresenter.attachView(this);
+        mFurnitureListPresenter.attachView(this, this.getContext());
         mFurnitureListPresenter.setFurnitureListAdapterModel(mFurnitureListAdapter);
         mFurnitureListPresenter.setFurnitureListAdapterView(mFurnitureListAdapter);
 

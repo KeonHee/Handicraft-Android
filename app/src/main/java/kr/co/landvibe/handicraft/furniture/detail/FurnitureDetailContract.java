@@ -1,6 +1,8 @@
 package kr.co.landvibe.handicraft.furniture.detail;
 
 
+import android.content.Context;
+
 import kr.co.landvibe.handicraft.data.domain.Furniture;
 
 public interface FurnitureDetailContract {
@@ -11,8 +13,6 @@ public interface FurnitureDetailContract {
 
         void hideLoading();
 
-        void moveToFurnitureMapActivity();
-
         void showContactDialog();
 
         void bindData(Furniture furniture);
@@ -20,7 +20,7 @@ public interface FurnitureDetailContract {
 
     interface Presenter{
 
-        void attachView(FurnitureDetailContract.View view);
+        void attachView(FurnitureDetailContract.View view, Context context);
 
         void detachView();
 

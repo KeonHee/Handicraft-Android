@@ -1,6 +1,8 @@
 package kr.co.landvibe.handicraft.furniture.list;
 
 
+import android.content.Context;
+
 import kr.co.landvibe.handicraft.furniture.list.adapter.contract.FurnitureListAdapterContract;
 
 public interface FurnitureListContract {
@@ -18,7 +20,7 @@ public interface FurnitureListContract {
 
     interface Presenter{
 
-        void attachView(FurnitureListContract.View view);
+        void attachView(FurnitureListContract.View view, Context context);
 
         void detachView();
 

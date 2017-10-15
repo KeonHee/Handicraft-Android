@@ -1,8 +1,6 @@
 package kr.co.landvibe.handicraft.data.source.furniture;
 
 
-import android.support.annotation.NonNull;
-
 import io.reactivex.Single;
 import kr.co.landvibe.handicraft.GlobalApp;
 import kr.co.landvibe.handicraft.data.domain.Furniture;
@@ -11,7 +9,7 @@ import kr.co.landvibe.handicraft.data.support.Pagination;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 
-public class FurnitureRepository implements FurnitureDataSource{
+public class FurnitureRepository implements FurnitureDataSource {
 
     private static FurnitureRepository INSTANCE;
 
@@ -39,32 +37,32 @@ public class FurnitureRepository implements FurnitureDataSource{
     }
 
     @Override
-    public Single<Furniture> createFurniture(@NonNull Furniture furniture) {
-        return mFurnitureService.createFurniture(furniture);
+    public Single<Furniture> createFurniture(String authorization, Furniture furniture) {
+        return mFurnitureService.createFurniture(authorization, furniture);
     }
 
     @Override
-    public Single<Furniture> getFurniture(long id) {
-        return mFurnitureService.getFurniture(id);
+    public Single<Furniture> getFurniture(String authorization, long id) {
+        return mFurnitureService.getFurniture(authorization, id);
     }
 
     @Override
-    public Single<Furniture> updateFurniture(@NonNull Furniture furniture) {
-        return mFurnitureService.updateFurniture(furniture.getId(), furniture);
+    public Single<Furniture> updateFurniture(String authorization, Furniture furniture) {
+        return mFurnitureService.updateFurniture(authorization, furniture.getId(), furniture);
     }
 
     @Override
-    public Single<Pagination<Furniture>> getFurnitureList(int page, int perPage) {
-        return mFurnitureService.getFurnitureList(page, perPage);
+    public Single<Pagination<Furniture>> getFurnitureList(String authorization, int page, int perPage) {
+        return mFurnitureService.getFurnitureList(authorization, page, perPage);
     }
 
     @Override
-    public void deleteFurniture(@NonNull Furniture furniture) {
-        deleteFurniture(furniture.getId());
+    public void deleteFurniture(String authorization, Furniture furniture) {
+        deleteFurniture(authorization, furniture.getId());
     }
 
     @Override
-    public void deleteFurniture(@NonNull long id) {
-        mFurnitureService.deleteFurniture(id);
+    public void deleteFurniture(String authorization, long id) {
+        mFurnitureService.deleteFurniture(authorization, id);
     }
 }

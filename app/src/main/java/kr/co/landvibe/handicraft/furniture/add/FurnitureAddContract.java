@@ -1,6 +1,8 @@
 package kr.co.landvibe.handicraft.furniture.add;
 
 
+import android.content.Context;
+
 import kr.co.landvibe.handicraft.data.domain.Furniture;
 
 public interface FurnitureAddContract {
@@ -13,13 +15,11 @@ public interface FurnitureAddContract {
 
         void backToMainActivity();
 
-        void showPreviewActivity(Furniture furniture);
-
     }
 
     interface Presenter{
 
-        void attachView(FurnitureAddContract.View view);
+        void attachView(FurnitureAddContract.View view, Context context);
 
         void detachView();
 

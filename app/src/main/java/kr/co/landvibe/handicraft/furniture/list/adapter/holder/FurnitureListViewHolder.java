@@ -10,6 +10,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import kr.co.landvibe.handicraft.R;
@@ -44,9 +49,14 @@ public class FurnitureListViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void onBind(Furniture furniture) {
-        if (furniture.getImageUrl() != null && furniture.getImageUrl().size() > 0) {
+        if (furniture.getImages() != null && furniture.getImages().size() > 0) {
             Glide.with(mContext)
-                    .load(furniture.getImageUrl().get(0))
+                    .load(furniture.getImages().get(0))
+                    .thumbnail(0.2f)
+                    .into(mFurnitureImage);
+        } else {
+            Glide.with(mContext)
+                    .load(getRandomFurnitureImage())
                     .thumbnail(0.2f)
                     .into(mFurnitureImage);
         }
@@ -56,6 +66,13 @@ public class FurnitureListViewHolder extends RecyclerView.ViewHolder {
         mDescription.setText(furniture.getDescription());
 
         itemView.setOnClickListener(v -> mOnItemClickListener.onItemClick(furniture));
+    }
+
+    private int getRandomFurnitureImage(){
+        List<Integer> furnitures = new ArrayList<>(
+                Arrays.asList(R.drawable.f1,R.drawable.f3,R.drawable.f5,R.drawable.f7,R.drawable.f8));
+        Random random = new Random();
+        return furnitures.get(random.nextInt(5));
     }
 
 

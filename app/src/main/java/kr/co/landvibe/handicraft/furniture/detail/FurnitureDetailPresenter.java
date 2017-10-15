@@ -1,6 +1,8 @@
 package kr.co.landvibe.handicraft.furniture.detail;
 
 
+import android.content.Context;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
@@ -10,19 +12,24 @@ import io.reactivex.schedulers.Schedulers;
 import kr.co.landvibe.handicraft.data.domain.Furniture;
 import kr.co.landvibe.handicraft.data.source.furniture.FurnitureRepository;
 import kr.co.landvibe.handicraft.utils.LogUtils;
+import kr.co.landvibe.handicraft.utils.SharedPreferenceUtils;
 import retrofit2.HttpException;
+
+import static kr.co.landvibe.handicraft.utils.DefineUtils.SPREF_UID;
 
 public class FurnitureDetailPresenter implements FurnitureDetailContract.Presenter {
 
     private FurnitureDetailContract.View view;
+    private Context context;
 
     private FurnitureRepository mFurnitureRepository;
 
     private CompositeDisposable disposables;
 
     @Override
-    public void attachView(FurnitureDetailContract.View view) {
+    public void attachView(FurnitureDetailContract.View view, Context context) {
         this.view = view;
+        this.context = context;
         mFurnitureRepository = FurnitureRepository.getInstance();
         disposables = new CompositeDisposable();
     }
@@ -30,6 +37,7 @@ public class FurnitureDetailPresenter implements FurnitureDetailContract.Present
     @Override
     public void detachView() {
         this.view = null;
+        this.context = null;
         mFurnitureRepository.destroyInstance();
         mFurnitureRepository = null;
         disposables.dispose();
@@ -39,7 +47,8 @@ public class FurnitureDetailPresenter implements FurnitureDetailContract.Present
     @Override
     public void loadFurniture(long id) {
         view.showLoading();
-        Disposable furnitureDisposable = mFurnitureRepository.getFurniture(id)
+        String craftToken = SharedPreferenceUtils.getStringPreference(context, SPREF_UID);
+        Disposable furnitureDisposable = mFurnitureRepository.getFurniture("craft " + craftToken, id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<Furniture>() {

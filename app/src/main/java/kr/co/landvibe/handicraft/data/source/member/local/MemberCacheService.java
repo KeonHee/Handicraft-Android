@@ -4,19 +4,19 @@ package kr.co.landvibe.handicraft.data.source.member.local;
 import io.realm.Realm;
 import kr.co.landvibe.handicraft.data.domain.Member;
 
-public class MemberCacheRepository {
+public class MemberCacheService {
 
-    private static MemberCacheRepository INSTANCE;
+    private static MemberCacheService INSTANCE;
 
     private Realm mRealm;
 
-    private MemberCacheRepository() {
+    private MemberCacheService() {
         mRealm = Realm.getDefaultInstance();
     }
 
-    public static MemberCacheRepository getInstance() {
+    public static MemberCacheService getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new MemberCacheRepository();
+            INSTANCE = new MemberCacheService();
         }
         return INSTANCE;
     }
@@ -30,7 +30,7 @@ public class MemberCacheRepository {
         return mRealm.where(Member.class).equalTo("id", id).findFirst();
     }
 
-    public void save(Member member) {
+    public void create(Member member) {
         mRealm.executeTransaction(realm -> {
             Member memberRealm = realm.createObject(Member.class, member.getId());
             memberRealm.bind(member);
@@ -43,8 +43,8 @@ public class MemberCacheRepository {
                 memberRealm.bind(member));
     }
 
-    public void delete(Member member) {
-        Member memberRealm = findById(member.getId());
+    public void delete(String id) {
+        Member memberRealm = findById(id);
         memberRealm.deleteFromRealm();
     }
 

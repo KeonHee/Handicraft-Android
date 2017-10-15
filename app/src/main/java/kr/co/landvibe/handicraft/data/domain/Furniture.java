@@ -4,7 +4,7 @@ package kr.co.landvibe.handicraft.data.domain;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 public class Furniture implements Serializable {
@@ -22,7 +22,7 @@ public class Furniture implements Serializable {
     @SerializedName("description")
     private String description;
     @SerializedName("images")
-    private List<String> imageUrl;
+    private List<String> images;
     @SerializedName("type")
     private String type; // 가구 타입(의자, 쇼파, 책장, ...)
     @SerializedName("brand")
@@ -32,30 +32,30 @@ public class Furniture implements Serializable {
     @SerializedName("price")
     private long price; // 판매가( 공유시 0원)
     @SerializedName("width")
-    private int width; // 가로, x
+    private double width; // 가로, x
     @SerializedName("length")
-    private int length; // 세로, y
+    private double length; // 세로, y
     @SerializedName("height")
-    private int height; // 높이, z
+    private double height; // 높이, z
     @SerializedName("location")
     private String location; // 거래지역
-    @SerializedName("lat")
-    private double lat; // 위도
-    @SerializedName("lon")
-    private double lon; // 경도
     @SerializedName("createAt")
-    private Date createAt; // 업로드 날짜
+    private Calendar createAt; // 업로드 날짜
+    @SerializedName("updateAt")
+    private Calendar updateAt; // 업로드 날짜
+    @SerializedName("closed")
+    private boolean closed;
 
     public Furniture() {
     }
 
-    public Furniture(long id, String title, String state, String grade, String description, List<String> imageUrl, String type, String brand, String periodOfUse, long price, int width, int length, int height, String location, double lat, double lon, Date createAt) {
+    public Furniture(long id, String title, String state, String grade, String description, List<String> images, String type, String brand, String periodOfUse, long price, double width, double length, double height, String location, Calendar createAt, Calendar updateAt, boolean closed) {
         this.id = id;
         this.title = title;
         this.state = state;
         this.grade = grade;
         this.description = description;
-        this.imageUrl = imageUrl;
+        this.images = images;
         this.type = type;
         this.brand = brand;
         this.periodOfUse = periodOfUse;
@@ -64,9 +64,9 @@ public class Furniture implements Serializable {
         this.length = length;
         this.height = height;
         this.location = location;
-        this.lat = lat;
-        this.lon = lon;
         this.createAt = createAt;
+        this.updateAt = updateAt;
+        this.closed = closed;
     }
 
     public long getId() {
@@ -109,12 +109,12 @@ public class Furniture implements Serializable {
         this.description = description;
     }
 
-    public List<String> getImageUrl() {
-        return imageUrl;
+    public List<String> getImages() {
+        return images;
     }
 
-    public void setImageUrl(List<String> imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImages(List<String> images) {
+        this.images = images;
     }
 
     public String getType() {
@@ -149,27 +149,27 @@ public class Furniture implements Serializable {
         this.price = price;
     }
 
-    public int getWidth() {
+    public double getWidth() {
         return width;
     }
 
-    public void setWidth(int width) {
+    public void setWidth(double width) {
         this.width = width;
     }
 
-    public int getLength() {
+    public double getLength() {
         return length;
     }
 
-    public void setLength(int length) {
+    public void setLength(double length) {
         this.length = length;
     }
 
-    public int getHeight() {
+    public double getHeight() {
         return height;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(double height) {
         this.height = height;
     }
 
@@ -181,27 +181,27 @@ public class Furniture implements Serializable {
         this.location = location;
     }
 
-    public double getLat() {
-        return lat;
-    }
-
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
-
-    public double getLon() {
-        return lon;
-    }
-
-    public void setLon(double lon) {
-        this.lon = lon;
-    }
-
-    public Date getCreateAt() {
+    public Calendar getCreateAt() {
         return createAt;
     }
 
-    public void setCreateAt(Date createAt) {
+    public void setCreateAt(Calendar createAt) {
         this.createAt = createAt;
+    }
+
+    public Calendar getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(Calendar updateAt) {
+        this.updateAt = updateAt;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
 }

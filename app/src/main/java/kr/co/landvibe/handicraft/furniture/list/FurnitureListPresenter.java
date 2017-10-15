@@ -1,6 +1,10 @@
 package kr.co.landvibe.handicraft.furniture.list;
 
 
+import android.content.Context;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -15,11 +19,15 @@ import kr.co.landvibe.handicraft.data.support.Pagination;
 import kr.co.landvibe.handicraft.furniture.list.adapter.contract.FurnitureListAdapterContract;
 import kr.co.landvibe.handicraft.listener.OnItemClickListener;
 import kr.co.landvibe.handicraft.utils.LogUtils;
+import kr.co.landvibe.handicraft.utils.SharedPreferenceUtils;
 import retrofit2.HttpException;
+
+import static kr.co.landvibe.handicraft.utils.DefineUtils.SPREF_UID;
 
 public class FurnitureListPresenter implements FurnitureListContract.Presenter, OnItemClickListener {
 
     private FurnitureListContract.View view;
+    private Context context;
 
     private FurnitureListAdapterContract.View mAdapterView;
     private FurnitureListAdapterContract.Model mAdapterModel;
@@ -29,8 +37,9 @@ public class FurnitureListPresenter implements FurnitureListContract.Presenter, 
     private CompositeDisposable disposables;
 
     @Override
-    public void attachView(FurnitureListContract.View view) {
+    public void attachView(FurnitureListContract.View view, Context context) {
         this.view = view;
+        this.context=context;
         mFurnitureRepository = FurnitureRepository.getInstance();
         disposables = new CompositeDisposable();
     }
@@ -38,6 +47,7 @@ public class FurnitureListPresenter implements FurnitureListContract.Presenter, 
     @Override
     public void detachView() {
         this.view = null;
+        this.context=null;
 
         mAdapterModel = null;
         mAdapterView = null;
@@ -61,21 +71,8 @@ public class FurnitureListPresenter implements FurnitureListContract.Presenter, 
     @Override
     public void loadFurnitureList() {
 
-//        List<Furniture> list = new ArrayList<>();
-//        list.add(new Furniture(1, "회색의자!", "팝니다", "a+", "1년만 쓴건데 상태좋아요"
-//                , null, "의자", "일룸", 3, 100000, 15, 15, 15, "서울", 0.0, 0.0, null, R.drawable.f1));
-//        list.add(new Furniture(2, "회색의자!", "팝니다", "a+", "1년만 쓴건데 상태좋아요"
-//                , null, "의자", "일룸", 3, 100000, 15, 15, 15, "서울", 0.0, 0.0, null, R.drawable.f3));
-//        list.add(new Furniture(3, "회색의자!", "팝니다", "a+", "1년만 쓴건데 상태좋아요"
-//                , null, "의자", "일룸", 3, 100000, 15, 15, 15, "서울", 0.0, 0.0, null, R.drawable.f5));
-//        list.add(new Furniture(4, "회색의자!", "팝니다", "a+", "1년만 쓴건데 상태좋아요"
-//                , null, "의자", "일룸", 3, 100000, 15, 15, 15, "서울", 0.0, 0.0, null, R.drawable.f7));
-//        list.add(new Furniture(5, "회색의자!", "팝니다", "a+", "1년만 쓴건데 상태좋아요"
-//                , null, "의자", "일룸", 3, 100000, 15, 15, 15, "서울", 0.0, 0.0, null, R.drawable.f8));
-//        list.add(new Furniture(6, "회색의자!", "팝니다", "a+", "1년만 쓴건데 상태좋아요"
-//                , null, "의자", "일룸", 3, 100000, 15, 15, 15, "서울", 0.0, 0.0, null, R.drawable.f9));
-
-        Disposable furnitureDisposable = mFurnitureRepository.getFurnitureList(0, 10)
+        String craftToken = SharedPreferenceUtils.getStringPreference(context, SPREF_UID);
+        Disposable furnitureDisposable = mFurnitureRepository.getFurnitureList("craft "+craftToken,0, 10)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<Pagination<Furniture>>() {
@@ -88,6 +85,9 @@ public class FurnitureListPresenter implements FurnitureListContract.Presenter, 
 
                     @Override
                     public void onError(@NonNull Throwable e) {
+                        mAdapterModel.setListData(loadFakeFurnitureData());
+                        mAdapterView.notifyAdapter();
+
                         if (e instanceof HttpException) {
                             LogUtils.i(e.getMessage());
                             int code = ((HttpException) e).code();
@@ -119,5 +119,23 @@ public class FurnitureListPresenter implements FurnitureListContract.Presenter, 
 
         // move to furniture detail page
         view.moveToFurnitureDetailActivity(furniture.getId());
+    }
+
+    private List<Furniture> loadFakeFurnitureData(){
+        Calendar createdAt = Calendar.getInstance();
+        List<Furniture> list = new ArrayList<>();
+        list.add(new Furniture(1, "회색의자!", "팝니다", "a+", "1년만 쓴건데 상태좋아요"
+                , null , "의자", "일룸", "3년", 20000, 15, 15, 15, "서울", createdAt, createdAt ,false ));
+        list.add(new Furniture(1, "회색의자!", "팝니다", "a+", "1년만 쓴건데 상태좋아요"
+                , null , "의자", "일룸", "2년", 10000, 15, 15, 15, "대전", createdAt, createdAt ,false ));
+        list.add(new Furniture(1, "회색의자!", "팝니다", "a+", "1년만 쓴건데 상태좋아요"
+                , null , "의자", "일룸", "4년", 12000, 15, 15, 15, "대구", createdAt, createdAt ,false ));
+        list.add(new Furniture(1, "회색의자!", "팝니다", "a+", "1년만 쓴건데 상태좋아요"
+                , null , "의자", "일룸", "5년", 8000, 15, 15, 15, "부산", createdAt, createdAt ,false ));
+        list.add(new Furniture(1, "회색의자!", "팝니다", "a+", "1년만 쓴건데 상태좋아요"
+                , null , "의자", "일룸", "6년", 5000, 15, 15, 15, "인천", createdAt, createdAt ,false ));
+        list.add(new Furniture(1, "회색의자!", "팝니다", "a+", "1년만 쓴건데 상태좋아요"
+                , null , "의자", "일룸", "1년", 40000, 15, 15, 15, "서울", createdAt, createdAt ,false ));
+        return list;
     }
 }

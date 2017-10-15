@@ -1,13 +1,20 @@
 package kr.co.landvibe.handicraft.furniture.detail;
 
 
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -17,6 +24,8 @@ import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
+import com.kennyc.bottomsheet.BottomSheet;
+import com.kennyc.bottomsheet.BottomSheetListener;
 
 import java.util.HashMap;
 
@@ -25,8 +34,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import kr.co.landvibe.handicraft.R;
 import kr.co.landvibe.handicraft.data.domain.Furniture;
-import kr.co.landvibe.handicraft.furniture.map.LocationActivity;
-import kr.co.landvibe.handicraft.utils.LogUtils;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class FurnitureDetailActivity extends AppCompatActivity
@@ -66,6 +73,9 @@ public class FurnitureDetailActivity extends AppCompatActivity
 
     private FurnitureDetailContract.Presenter mFurnitureDetailPresenter;
 
+    private View view;
+    private Activity activity;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -76,7 +86,8 @@ public class FurnitureDetailActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_furniture_detail);
         ButterKnife.bind(this);
-
+        view = getWindow().getDecorView().getRootView();
+        activity = this;
         init();
     }
 
@@ -89,7 +100,7 @@ public class FurnitureDetailActivity extends AppCompatActivity
         long furnitureId = intent.getLongExtra("id", 0);
 
         mFurnitureDetailPresenter = new FurnitureDetailPresenter();
-        mFurnitureDetailPresenter.attachView(this);
+        mFurnitureDetailPresenter.attachView(this, this);
         mFurnitureDetailPresenter.loadFurniture(furnitureId);
 
         bindSliderDate(new HashMap<>()); // TODO 네트워크 연동되면 삭제
@@ -108,7 +119,7 @@ public class FurnitureDetailActivity extends AppCompatActivity
         slider.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, height));
     }
 
-    private void bindSliderDate(HashMap<String, Integer> fileMap){
+    private void bindSliderDate(HashMap<String, Integer> fileMap) {
         // mockup data
         HashMap<String, Integer> file_maps = new HashMap<String, Integer>();
         file_maps.put("Hannibal", R.drawable.f1);
@@ -133,19 +144,54 @@ public class FurnitureDetailActivity extends AppCompatActivity
         }
     }
 
-    @OnClick(R.id.tv_furniture_location)
-    public void moveToFurnitureMapActivity(View v) {
-        moveToFurnitureMapActivity();
-    }
-
-    @OnClick(R.id.star_container)
-    public void starAtThisFurniture(View v) {
-        LogUtils.d("starAtThisFurniture()");
-    }
-
     @OnClick(R.id.buy_container)
     public void contactToSeller(View v) {
-        LogUtils.d("contactToSeller()");
+        new BottomSheet.Builder(this)
+                .setSheet(R.menu.contact_list)
+                .setTitle("판매자에게 연락하기")
+                .setListener(new BottomSheetListener() {
+
+                    @Override
+                    public void onSheetShown(@NonNull BottomSheet bottomSheet) {
+
+                    }
+
+                    @Override
+                    public void onSheetItemSelected(@NonNull BottomSheet bottomSheet, MenuItem menuItem) {
+                        switch (menuItem.getItemId()) {
+                            case R.id.kakao:
+                                String kakaoId = "halfcraft-kakao";
+                                ClipboardManager clipboardManager = null;
+                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                                    clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                                    ClipData clipData = ClipData.newPlainText("label", kakaoId);
+                                    clipboardManager.setPrimaryClip(clipData);
+                                    new BottomSheet.Builder(view.getContext())
+                                            .setTitle("카카오톡 안내")
+                                            .setMessage("클립보드에 판매자의 카카오톡 아이디(" + kakaoId + ")를 저장했습니다.\n카카오톡으로 이동하여 친구추가를 하세요!")
+                                            .setPositiveButton("닫기")
+                                            .setIcon(getDrawable(R.drawable.kakaolink_btn_small))
+                                            .show();
+                                } else {
+                                    Snackbar.make(view, "마쉬멜로우 버전 이상부터 사용할 수 있습니다.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                }
+                                break;
+                            case R.id.mms:
+                                String phone = "010-3692-5036";
+                                Uri uri= Uri.parse("smsto:"+phone.replace("-",""));
+                                Intent intent = new Intent(Intent.ACTION_SENDTO,uri);
+                                intent.putExtra("sms_body", "반쪽이 공방 어플 보고 연락드렸습니다.");
+                                startActivity(intent);
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onSheetDismissed(@NonNull BottomSheet bottomSheet, @DismissEvent int i) {
+
+                    }
+                })
+                .show();
     }
 
     @Override
@@ -159,8 +205,25 @@ public class FurnitureDetailActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         mFurnitureDetailPresenter.detachView();
+        view = null;
+        activity = null;
     }
 
+    @OnClick(R.id.tv_furniture_location)
+    public void showLocation(View view){
+        String addrQuery = mLocationTv.getText().toString();
+        Uri addressUriByBuilder = new Uri.Builder()
+                .scheme("geo")
+                .path("0,0")
+                .appendQueryParameter("q",addrQuery)
+                .build();
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(addressUriByBuilder);
+        if(intent.resolveActivity(getPackageManager())!=null){
+            startActivity(intent);
+        }
+    }
     /**
      * BaseSliderView.OnSliderClickListener
      *
@@ -200,13 +263,6 @@ public class FurnitureDetailActivity extends AppCompatActivity
     @Override
     public void hideLoading() {
 
-    }
-
-    @Override
-    public void moveToFurnitureMapActivity() {
-        final Intent intent = new Intent(this, LocationActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startActivity(intent);
     }
 
     @Override

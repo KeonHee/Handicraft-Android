@@ -17,7 +17,8 @@
         <android.support.v7.widget.CardView
             android:id="@+id/image_container"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
@@ -25,8 +26,15 @@
             android:background="@color/white"
             card:cardCornerRadius="0dp"
             >
-            <!-- temp height -->
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_images"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                >
 
+            </android.support.v7.widget.RecyclerView>
 
         </android.support.v7.widget.CardView>
 
@@ -556,21 +564,11 @@
             android:layout_marginTop="16dp"
             android:orientation="horizontal"
             >
-            <Button
-                android:id="@+id/btn_preview"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/bottom_bar_size"
-                android:layout_weight="1"
-                android:background="@color/grayLight3"
-                android:text="@string/furniture_preview_btn_label"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                />
+
             <Button
                 android:id="@+id/btn_register"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/bottom_bar_size"
-                android:layout_weight="2"
                 android:background="@color/red"
                 android:text="@string/furniture_add_btn_label"
                 android:textColor="@color/white"

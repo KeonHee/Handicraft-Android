@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/mms"
+        android:icon="@drawable/ic_message_grey_24dp"
+        android:title="문자하기" />
+
+    <item
+        android:id="@+id/kakao"
+        android:icon="@drawable/kakaolink_btn_small"
+        android:title="카카오톡으로 연락하기" />
+
+</menu>

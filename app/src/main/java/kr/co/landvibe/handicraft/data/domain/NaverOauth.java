@@ -1,24 +1,19 @@
 package kr.co.landvibe.handicraft.data.domain;
 
-
-import io.realm.RealmObject;
-
-public class NaverOauthInfo extends RealmObject{
+public class NaverOauth {
 
     private String accessToken;
     private String refreshToken;
     private long expiresAt;
     private String tokenType;
-    private Member member;
 
-    public NaverOauthInfo(){}
+    public NaverOauth(){}
 
-    public NaverOauthInfo(String accessToken, String refreshToken, long expiresAt, String tokenType, Member member) {
+    public NaverOauth(String accessToken, String refreshToken, long expiresAt, String tokenType) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.expiresAt = expiresAt;
         this.tokenType = tokenType;
-        this.member = member;
     }
 
     public String getAccessToken() {
@@ -51,13 +46,5 @@ public class NaverOauthInfo extends RealmObject{
 
     public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public void setMember(Member member) {
-        this.member = member;
     }
 }
